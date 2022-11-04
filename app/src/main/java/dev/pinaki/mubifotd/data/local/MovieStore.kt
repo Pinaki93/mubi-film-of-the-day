@@ -4,15 +4,19 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import dev.pinaki.mubifotd.domain.FilmOfTheDay
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MovieStore {
     @Insert
-    fun insert(movies: List<FilmOfTheDay>)
+    suspend fun insert(movies: List<FilmOfTheDay>)
 
     @Query("select * from film_of_the_day")
-    fun all(): List<FilmOfTheDay>
+    fun getAllAsFlow(): Flow<List<FilmOfTheDay>>
+
+    @Query("select * from film_of_the_day")
+    suspend fun getAll(): List<FilmOfTheDay>
 
     @Query("delete from film_of_the_day")
-    fun clearAll()
+    suspend fun clearAll()
 }

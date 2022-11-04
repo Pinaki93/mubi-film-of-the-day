@@ -8,8 +8,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import dev.pinaki.mubifotd.di.InjectorFactory
+import dev.pinaki.mubifotd.landing.LandingScreen
 import dev.pinaki.mubifotd.ui.theme.MubiFilmOfTheDayTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,22 +26,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Greeting("Android")
+                    val viewModel = InjectorFactory.fromContext(LocalContext.current)
+                        .rememberLandingUiInjector(coroutineScope = rememberCoroutineScope())
+                        .viewModel()
+                    LandingScreen(viewModel)
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MubiFilmOfTheDayTheme {
-        Greeting("Android")
     }
 }
