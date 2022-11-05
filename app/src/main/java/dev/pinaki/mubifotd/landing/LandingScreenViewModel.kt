@@ -3,6 +3,7 @@ package dev.pinaki.mubifotd.landing
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import dev.pinaki.mubifotd.alarm.AlarmInteractor
 import dev.pinaki.mubifotd.data.remote.HttpClientResponse
 import dev.pinaki.mubifotd.data.remote.ParsingError
 import dev.pinaki.mubifotd.domain.FilmOfTheDay
@@ -11,9 +12,10 @@ import dev.pinaki.mubifotd.landing.FilmOfTheDayState.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class FilmOfTheDayViewModel(
-    private val coroutineScope: CoroutineScope,
+class LandingScreenViewModel(
+    coroutineScope: CoroutineScope,
     private val filmOfTheDayInteractor: FilmOfTheDayInteractor,
+    alarmInteractor: AlarmInteractor
 ) {
 
     var state by mutableStateOf<FilmOfTheDayState>(Loading)
@@ -21,7 +23,7 @@ class FilmOfTheDayViewModel(
 
     init {
         coroutineScope.launch {
-            state = if (filmOfTheDayInteractor.syncRequiredOnAppLaunch()) {
+            state = if (filmOfTheDayInteractor.syncRequired()) {
                 // start as loading
                 when (val syncResult = filmOfTheDayInteractor.sync()) {
                     is HttpClientResponse.HttpError -> ServerError(syncResult.statusCode)
@@ -34,6 +36,10 @@ class FilmOfTheDayViewModel(
             } else {
                 Success(filmOfTheDayInteractor.getFilmOfTheDay()!!)
             }
+        }
+
+        if (!alarmInteractor.isAlarmSet()) {
+            alarmInteractor.scheduleAlarm()
         }
     }
 }

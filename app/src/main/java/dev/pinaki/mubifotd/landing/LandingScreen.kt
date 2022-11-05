@@ -4,7 +4,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-fun LandingScreen(viewModel: FilmOfTheDayViewModel) {
+fun LandingScreen(viewModel: LandingScreenViewModel) {
     when (val state = viewModel.state) {
         FilmOfTheDayState.FatalError -> Text(text = "Fatal error")
         FilmOfTheDayState.Loading -> Text(text = "Loading")

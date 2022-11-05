@@ -2,6 +2,7 @@ package dev.pinaki.mubifotd.di
 
 import android.annotation.SuppressLint
 import android.content.Context
+import dev.pinaki.mubifotd.common.DateHelper
 import dev.pinaki.mubifotd.di.module.*
 import dev.pinaki.mubifotd.landing.di.LandingSubContainer
 import kotlinx.coroutines.CoroutineScope
@@ -11,17 +12,31 @@ class RootContainer private constructor(private val context: Context) {
     private val dbModule by lazy { DbModule(context) }
     private val networkModule by lazy { NetworkModule(ParserModule.moshi) }
     private val sharedPreferencesModule by lazy { SharedPreferencesModule(context) }
+    private val timeProviderModule by lazy { TimeProviderModule }
+    private val utilModule by lazy { UtilModule }
     private val interactorModule by lazy {
         InteractorModule(
             networkModule.mubiClient,
             dbModule.movieStore,
             sharedPreferencesModule.appPreferences(),
-            TimeProviderModule.timeProvider()
+            timeProviderModule.timeProvider(),
+            utilModule.dateHelper
+        )
+    }
+    private val notificationModule by lazy {
+        NotificationModule(context)
+    }
+    val alarmModule by lazy {
+        AlarmModule(
+            context,
+            timeProviderModule.timeProvider(),
+            interactorModule.filmOfTheDayInteractor(),
+            notificationModule.notificationHandler()
         )
     }
 
     fun landingSubContainer(coroutineScope: CoroutineScope) =
-        LandingSubContainer(coroutineScope, interactorModule)
+        LandingSubContainer(coroutineScope, interactorModule, alarmModule)
 
     companion object {
         @SuppressLint("StaticFieldLeak")

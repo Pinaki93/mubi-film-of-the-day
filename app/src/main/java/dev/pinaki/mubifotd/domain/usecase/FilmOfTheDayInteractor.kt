@@ -1,5 +1,6 @@
 package dev.pinaki.mubifotd.domain.usecase
 
+import dev.pinaki.mubifotd.common.DateHelper
 import dev.pinaki.mubifotd.common.TimeProvider
 import dev.pinaki.mubifotd.data.local.AppPreferences
 import dev.pinaki.mubifotd.data.local.MovieStore
@@ -13,7 +14,8 @@ class FilmOfTheDayInteractor(
     private val client: MubiClient,
     private val store: MovieStore,
     private val preferences: AppPreferences,
-    private val timeProvider: TimeProvider
+    private val timeProvider: TimeProvider,
+    private val dateHelper: DateHelper
 ) {
     suspend fun sync(): HttpClientResponse<List<FilmOfTheDay>> {
         val response = client.fetchMovies()
@@ -36,9 +38,11 @@ class FilmOfTheDayInteractor(
 
     fun fatalStateReached() = preferences.fatalStateReached
 
-    suspend fun syncRequiredOnAppLaunch() =
+    suspend fun syncRequired() =
         getFilmOfTheDay() == null
                 && preferences.fatalStateReached.not()
-                && timeProvider.currentTimeInMillis() - preferences.lastSyncTime >
-                TimeUnit.DAYS.toMillis(1)
+                && !dateHelper.isSameDate(
+            preferences.lastSyncTime,
+            timeProvider.currentTimeInMillis()
+        )
 }
