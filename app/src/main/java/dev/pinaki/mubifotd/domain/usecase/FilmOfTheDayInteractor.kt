@@ -38,10 +38,8 @@ class FilmOfTheDayInteractor(
     fun fatalStateReached() = preferences.fatalStateReached
 
     suspend fun syncRequired() =
-        getFilmOfTheDay() == null
-                && preferences.fatalStateReached.not()
-                && !dateHelper.isSameDate(
+        preferences.fatalStateReached.not() && (getFilmOfTheDay() == null || !dateHelper.isSameDate(
             preferences.lastSyncTime,
             timeProvider.currentTimeInMillis()
-        )
+        ))
 }
