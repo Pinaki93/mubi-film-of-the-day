@@ -21,15 +21,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MubiFilmOfTheDayTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    val viewModel = InjectorFactory.fromContext(LocalContext.current)
+                    val injector = InjectorFactory.fromContext(LocalContext.current)
                         .rememberLandingUiInjector(coroutineScope = rememberCoroutineScope())
-                        .viewModel()
-                    LandingScreen(viewModel)
+                    LandingScreen(injector.viewModel, injector.viewController)
                 }
             }
         }

@@ -15,7 +15,7 @@ import dev.pinaki.mubifotd.R
 import dev.pinaki.mubifotd.ui.theme.Typography
 
 @Composable
-fun LandingScreen(viewModel: LandingScreenViewModel) {
+fun LandingScreen(viewModel: LandingScreenViewModel, viewController: LandingScreenViewController) {
     when (val state = viewModel.state) {
         FilmOfTheDayState.FatalError -> FatalErrorView()
         FilmOfTheDayState.Loading -> LoadingView()
@@ -24,7 +24,12 @@ fun LandingScreen(viewModel: LandingScreenViewModel) {
             state = state,
             onRetryClick = { viewModel.retry() }
         )
-        is FilmOfTheDayState.Success -> SuccessView(state = state)
+        is FilmOfTheDayState.Success -> SuccessView(
+            state = state,
+            onShareClick = {
+                viewController.share(state.shareText)
+            }
+        )
     }
 }
 
@@ -91,7 +96,7 @@ private fun SimpleContentView(
 }
 
 @Composable
-private fun SuccessView(state: FilmOfTheDayState.Success) {
+private fun SuccessView(state: FilmOfTheDayState.Success, onShareClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -111,7 +116,7 @@ private fun SuccessView(state: FilmOfTheDayState.Success) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            OutlinedButton(onClick = { /*TODO*/ }, modifier = Modifier.weight(1f)) {
+            OutlinedButton(onClick = onShareClick, modifier = Modifier.weight(1f)) {
                 Text(text = stringResource(R.string.share))
             }
             Spacer(modifier = Modifier.width(16.dp))

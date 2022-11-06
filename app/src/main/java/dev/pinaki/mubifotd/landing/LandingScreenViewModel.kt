@@ -62,6 +62,8 @@ sealed class FilmOfTheDayState {
         val directors = filmOfTheDay.directors.joinToString()
         val synopsis = filmOfTheDay.synopsis
         val showViewOlderButton = filmOfTheDayList.size > 1
+        val shareText =
+            "Today's Movie of the day:\n ${filmOfTheDay.title} ($year) by $directors\n ${filmOfTheDay.webUrl}"
     }
 
     object Offline : FilmOfTheDayState()

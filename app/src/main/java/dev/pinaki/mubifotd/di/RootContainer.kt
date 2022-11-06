@@ -35,8 +35,8 @@ class RootContainer private constructor(private val context: Context) {
         )
     }
 
-    fun landingSubContainer(coroutineScope: CoroutineScope) =
-        LandingSubContainer(coroutineScope, interactorModule, alarmModule)
+    fun landingSubContainer(localContext: Context, coroutineScope: CoroutineScope) =
+        LandingSubContainer(coroutineScope, localContext, interactorModule, alarmModule)
 
     companion object {
         @SuppressLint("StaticFieldLeak")

@@ -3,6 +3,7 @@ package dev.pinaki.mubifotd.di
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import dev.pinaki.mubifotd.alarm.di.AlarmInjector
 import dev.pinaki.mubifotd.di.injector.LandingUiInjector
 import dev.pinaki.mubifotd.di.module.AlarmModule
@@ -12,10 +13,13 @@ class InjectorFactory(private val rootContainer: RootContainer) {
     @Composable
     fun rememberLandingUiInjector(
         coroutineScope: CoroutineScope
-    ) = remember(coroutineScope) {
-        LandingUiInjector(
-            rootContainer.landingSubContainer(coroutineScope).landingModule
-        )
+    ): LandingUiInjector {
+        val context = LocalContext.current
+        return remember(context, coroutineScope) {
+            LandingUiInjector(
+                rootContainer.landingSubContainer(context, coroutineScope).landingModule
+            )
+        }
     }
 
     fun getAlarmInjector(): AlarmInjector {
