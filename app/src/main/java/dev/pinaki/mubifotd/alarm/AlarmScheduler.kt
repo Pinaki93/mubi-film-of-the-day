@@ -2,8 +2,10 @@ package dev.pinaki.mubifotd.alarm
 
 import android.app.AlarmManager
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 
 interface AlarmScheduler {
@@ -16,6 +18,13 @@ class RealAlarmScheduler(
     private val context: Context
 ) : AlarmScheduler {
     override fun schedule(time: Long) {
+        val resetReceiver = ComponentName(context, AlarmResetReceiver::class.java)
+        context.packageManager.setComponentEnabledSetting(
+            resetReceiver,
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+            PackageManager.DONT_KILL_APP
+        )
+
         val alarmIntent = pendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
