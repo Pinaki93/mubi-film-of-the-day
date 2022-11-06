@@ -13,7 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class LandingScreenViewModel(
-    coroutineScope: CoroutineScope,
+    private val coroutineScope: CoroutineScope,
     private val filmOfTheDayInteractor: FilmOfTheDayInteractor,
     alarmInteractor: AlarmInteractor
 ) {
@@ -24,17 +24,11 @@ class LandingScreenViewModel(
     init {
         coroutineScope.launch {
             state = if (filmOfTheDayInteractor.syncRequired()) {
-                // start as loading
-                when (val syncResult = filmOfTheDayInteractor.sync()) {
-                    is HttpClientResponse.HttpError -> ServerError(syncResult.statusCode)
-                    HttpClientResponse.Offline -> Offline
-                    is HttpClientResponse.Ok -> Success(syncResult.data.first())
-                    ParsingError -> FatalError
-                }
+                syncFilmOfTheDay()
             } else if (filmOfTheDayInteractor.fatalStateReached()) {
                 FatalError
             } else {
-                Success(filmOfTheDayInteractor.getFilmOfTheDay()!!)
+                Success(filmOfTheDayInteractor.getFilmOfTheDayList())
             }
         }
 
@@ -42,12 +36,34 @@ class LandingScreenViewModel(
             alarmInteractor.scheduleAlarm()
         }
     }
+
+    private suspend fun syncFilmOfTheDay() = when (val syncResult = filmOfTheDayInteractor.sync()) {
+        is HttpClientResponse.HttpError -> ServerError(syncResult.statusCode)
+        HttpClientResponse.Offline -> Offline
+        is HttpClientResponse.Ok -> Success(filmOfTheDayInteractor.getFilmOfTheDayList())
+        ParsingError -> FatalError
+    }
+
+    fun retry() {
+        coroutineScope.launch {
+            state = Loading
+            state = syncFilmOfTheDay()
+        }
+    }
 }
 
 
 sealed class FilmOfTheDayState {
     object Loading : FilmOfTheDayState()
-    data class Success(val filmOfTheDay: FilmOfTheDay) : FilmOfTheDayState()
+    class Success(filmOfTheDayList: List<FilmOfTheDay>) : FilmOfTheDayState() {
+        val filmOfTheDay = filmOfTheDayList.first()
+        private val year = filmOfTheDay.year
+        val title: String = "${filmOfTheDay.title} ($year)"
+        val directors = filmOfTheDay.directors.joinToString()
+        val synopsis = filmOfTheDay.synopsis
+        val showViewOlderButton = filmOfTheDayList.size > 1
+    }
+
     object Offline : FilmOfTheDayState()
     data class ServerError(val errorCode: Int) : FilmOfTheDayState()
     object FatalError : FilmOfTheDayState()

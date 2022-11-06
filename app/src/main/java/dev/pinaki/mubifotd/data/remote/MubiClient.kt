@@ -63,7 +63,8 @@ class MubiClient(private val okHttpClient: OkHttpClient, private val moshi: Mosh
                     filmInfo.webUrl,
                     index,
                     filmInfo.directors?.mapNotNull { it.name } ?: emptyList(),
-                    filmInfo.year
+                    filmInfo.year,
+                    filmInfo.shortSynopsis ?: ""
                 )
             }
         }.also { println("${it.size}") }

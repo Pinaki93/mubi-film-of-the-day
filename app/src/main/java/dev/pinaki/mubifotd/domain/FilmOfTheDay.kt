@@ -15,5 +15,6 @@ data class FilmOfTheDay(
     val webUrl: String,
     val order: Int,
     val directors: List<String>,
-    val year: Int
+    val year: Int,
+    val synopsis: String
 )

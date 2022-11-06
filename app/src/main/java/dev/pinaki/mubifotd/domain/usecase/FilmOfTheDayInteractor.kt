@@ -33,6 +33,8 @@ class FilmOfTheDayInteractor(
 
     suspend fun getFilmOfTheDay() = store.getAll().firstOrNull()
 
+    suspend fun getFilmOfTheDayList() = store.getAll()
+
     fun fatalStateReached() = preferences.fatalStateReached
 
     suspend fun syncRequired() =
