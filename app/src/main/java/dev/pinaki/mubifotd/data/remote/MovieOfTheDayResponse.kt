@@ -2,6 +2,7 @@ package dev.pinaki.mubifotd.data.remote
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.time.Year
 
 @JsonClass(generateAdapter = true)
 class MovieOfTheDayResponse(val props: Props) {
@@ -20,10 +21,14 @@ class MovieOfTheDayResponse(val props: Props) {
                 @JsonClass(generateAdapter = true)
                 class FilmInfo(
                     val title: String,
-                    @Json(name = "short_synopsis") val shortSynopsis: String,
+                    @Json(name = "short_synopsis") val shortSynopsis: String?,
                     @Json(name = "web_url") val webUrl: String,
-                    @Json(name = "still_url") val stillUrl: String
-                )
+                    val year: Int,
+                    val directors: List<Director>?
+                ) {
+                    @JsonClass(generateAdapter = true)
+                    class Director(val name: String?)
+                }
             }
         }
     }

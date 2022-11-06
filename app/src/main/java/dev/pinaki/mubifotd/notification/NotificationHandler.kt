@@ -18,10 +18,14 @@ class RealNotificationHandler(
     override fun notifyFilmOfTheDay(filmOfTheDay: FilmOfTheDay) {
         filmOfTheDayChannel.create()
 
+        val contentTextBuilder = StringBuilder(filmOfTheDay.title)
+        if (filmOfTheDay.year > 0) {
+            contentTextBuilder.append(" (${filmOfTheDay.year})")
+        }
         val notification = NotificationCompat.Builder(context, filmOfTheDayChannel.id)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(context.getString(R.string.mubi_film_of_the_day))
-            .setContentText(filmOfTheDay.title)
+            .setContentText(contentTextBuilder.toString())
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
 

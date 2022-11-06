@@ -11,8 +11,9 @@ data class FilmOfTheDay(
     @ColumnInfo(name = "film_id")
     val filmId: Int,
     val title: String,
-    @ColumnInfo(name = "image_url")
-    val imageUrl: String,
     @ColumnInfo(name = "web_url")
-    val webUrl: String
+    val webUrl: String,
+    val order: Int,
+    val directors: List<String>,
+    val year: Int
 )

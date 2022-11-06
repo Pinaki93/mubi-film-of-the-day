@@ -53,15 +53,17 @@ class MubiClient(private val okHttpClient: OkHttpClient, private val moshi: Mosh
         val initialState = movieOfTheDayResponse.props.initialState
         val films = initialState.film.films
 
-        return initialState.filmProgramming.filmProgrammings.mapNotNull { programInfo ->
+        return initialState.filmProgramming.filmProgrammings.mapIndexedNotNull { index, programInfo ->
             val filmInfo = films[programInfo.filmId.toString()]
             filmInfo?.let {
                 FilmOfTheDay(
                     programInfo.id,
                     programInfo.filmId,
                     filmInfo.title,
-                    filmInfo.stillUrl,
-                    filmInfo.webUrl
+                    filmInfo.webUrl,
+                    index,
+                    filmInfo.directors?.mapNotNull { it.name } ?: emptyList(),
+                    filmInfo.year
                 )
             }
         }.also { println("${it.size}") }

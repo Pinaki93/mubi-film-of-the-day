@@ -10,6 +10,6 @@ fun LandingScreen(viewModel: LandingScreenViewModel) {
         FilmOfTheDayState.Loading -> Text(text = "Loading")
         FilmOfTheDayState.Offline -> Text(text = "offline")
         is FilmOfTheDayState.ServerError -> Text(text = "server error (${state.errorCode}")
-        is FilmOfTheDayState.Success -> Text(text = state.filmOfTheDay.title)
+        is FilmOfTheDayState.Success -> Text(text = "${state.filmOfTheDay.title} - ${state.filmOfTheDay.year} - ${state.filmOfTheDay.directors.joinToString()}")
     }
 }

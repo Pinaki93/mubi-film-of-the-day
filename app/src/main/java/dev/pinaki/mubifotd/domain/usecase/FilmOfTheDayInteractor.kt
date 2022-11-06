@@ -20,8 +20,7 @@ class FilmOfTheDayInteractor(
     suspend fun sync(): HttpClientResponse<List<FilmOfTheDay>> {
         val response = client.fetchMovies()
         if (response is HttpClientResponse.Ok) {
-            store.clearAll()
-            store.insert(response.data.reversed())
+            store.clearAndInsertAll(response.data)
             preferences.lastSyncTime = timeProvider.currentTimeInMillis()
         }
 
@@ -31,8 +30,6 @@ class FilmOfTheDayInteractor(
         }
         return response
     }
-
-    fun getAllAsFlow() = store.getAllAsFlow()
 
     suspend fun getFilmOfTheDay() = store.getAll().firstOrNull()
 
