@@ -28,6 +28,9 @@ fun LandingScreen(viewModel: LandingScreenViewModel, viewController: LandingScre
             state = state,
             onShareClick = {
                 viewController.share(state.shareText)
+            },
+            onWatchClick = {
+                viewController.openMubi(state.url)
             }
         )
     }
@@ -96,7 +99,11 @@ private fun SimpleContentView(
 }
 
 @Composable
-private fun SuccessView(state: FilmOfTheDayState.Success, onShareClick: () -> Unit) {
+private fun SuccessView(
+    state: FilmOfTheDayState.Success,
+    onShareClick: () -> Unit,
+    onWatchClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -120,7 +127,7 @@ private fun SuccessView(state: FilmOfTheDayState.Success, onShareClick: () -> Un
                 Text(text = stringResource(R.string.share))
             }
             Spacer(modifier = Modifier.width(16.dp))
-            Button(onClick = { /*TODO*/ }, modifier = Modifier.weight(1f)) {
+            Button(onClick = onWatchClick, modifier = Modifier.weight(1f)) {
                 Text(text = stringResource(R.string.watch_on_mubi))
             }
         }

@@ -2,6 +2,7 @@ package dev.pinaki.mubifotd.landing
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 
 class LandingScreenViewController(val context: Context) {
     fun share(text: String) {
@@ -13,5 +14,10 @@ class LandingScreenViewController(val context: Context) {
 
         val shareIntent = Intent.createChooser(sendIntent, null)
         context.startActivity(shareIntent)
+    }
+
+    fun openMubi(url: String) {
+        val sendIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(sendIntent)
     }
 }
