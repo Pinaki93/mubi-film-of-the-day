@@ -5,7 +5,6 @@
     <string name="mubi_film_of_the_day">Mubi Film Of The Day</string>
     <string name="watch_on_mubi">Watch on Mubi</string>
     <string name="share">Share</string>
-    <string name="view_older">View Older</string>
     <string name="retry">Retry</string>
     <string name="offline_message">You seem to be offline. Please connect to the internet and try again</string>
     <string name="server_error_message">A server error occurred (%d). Please try after some time</string>

@@ -131,10 +131,5 @@ private fun SuccessView(
                 Text(text = stringResource(R.string.watch_on_mubi))
             }
         }
-        if (state.showViewOlderButton) {
-            TextButton(onClick = { /*TODO*/ }) {
-                Text(text = stringResource(R.string.view_older))
-            }
-        }
     }
 }
