@@ -1,29 +1,49 @@
 package dev.pinaki.mubifotd.data.local
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Transaction
+import com.squareup.moshi.Moshi
+import dev.pinaki.mubifotd.common.filestorage.FileStore
 import dev.pinaki.mubifotd.domain.FilmOfTheDay
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
-@Dao
-abstract class MovieStore {
-    @Insert
-    protected abstract suspend fun insert(movies: List<FilmOfTheDay>)
+interface MovieStore {
+    suspend fun getFilmOfTheDay(): FilmOfTheDay?
+    suspend fun clear()
+    suspend fun clearAndInsert(filmOfTheDay: FilmOfTheDay)
+}
 
-    @Query("select * from film_of_the_day")
-    abstract fun getAllAsFlow(): Flow<List<FilmOfTheDay>>
+class RealMovieStore(
+    private val fileStore: FileStore,
+    private val moshi: Moshi,
+) : MovieStore {
 
-    @Query("select * from film_of_the_day order by `order` asc")
-    abstract suspend fun getAll(): List<FilmOfTheDay>
-
-    @Query("delete from film_of_the_day")
-    abstract suspend fun clearAll()
-
-    @Transaction
-    open suspend fun clearAndInsertAll(movies: List<FilmOfTheDay>) {
-        clearAll()
-        insert(movies)
+    private val mutex = Mutex()
+    private val adapter by lazy {
+        moshi.adapter(FilmOfTheDay::class.java)
     }
+
+    override suspend fun getFilmOfTheDay(): FilmOfTheDay? {
+        return fileStore.read(KEY_FILM_OF_THE_DAY)
+            ?.let { adapter.fromJson(it) }
+    }
+
+    override suspend fun clear() {
+        fileStore.read(KEY_FILM_OF_THE_DAY)
+    }
+
+    private suspend fun insert(value: FilmOfTheDay) {
+        fileStore.write(KEY_FILM_OF_THE_DAY, adapter.toJson(value))
+    }
+
+    override suspend fun clearAndInsert(filmOfTheDay: FilmOfTheDay) {
+        mutex.withLock {
+            clear()
+            insert(filmOfTheDay)
+        }
+    }
+
+    companion object {
+        private const val KEY_FILM_OF_THE_DAY = "fotd"
+    }
+
 }

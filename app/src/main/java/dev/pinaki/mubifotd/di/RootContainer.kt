@@ -2,14 +2,13 @@ package dev.pinaki.mubifotd.di
 
 import android.annotation.SuppressLint
 import android.content.Context
-import dev.pinaki.mubifotd.common.DateHelper
 import dev.pinaki.mubifotd.di.module.*
 import dev.pinaki.mubifotd.landing.di.LandingSubContainer
 import kotlinx.coroutines.CoroutineScope
 
 class RootContainer private constructor(private val context: Context) {
 
-    private val dbModule by lazy { DbModule(context) }
+    private val dbModule by lazy { PersistenceModule(context, ParserModule.moshi) }
     private val networkModule by lazy { NetworkModule(ParserModule.moshi) }
     private val sharedPreferencesModule by lazy { SharedPreferencesModule(context) }
     private val timeProviderModule by lazy { TimeProviderModule }
@@ -17,7 +16,7 @@ class RootContainer private constructor(private val context: Context) {
     private val interactorModule by lazy {
         InteractorModule(
             networkModule.mubiClient,
-            dbModule.movieStore,
+            dbModule.store,
             sharedPreferencesModule.appPreferences(),
             timeProviderModule.timeProvider(),
             utilModule.dateHelper

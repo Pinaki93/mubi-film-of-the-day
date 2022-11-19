@@ -8,7 +8,6 @@ import dev.pinaki.mubifotd.data.remote.HttpClientResponse
 import dev.pinaki.mubifotd.data.remote.MubiClient
 import dev.pinaki.mubifotd.data.remote.ParsingError
 import dev.pinaki.mubifotd.domain.FilmOfTheDay
-import java.util.concurrent.TimeUnit
 
 class FilmOfTheDayInteractor(
     private val client: MubiClient,
@@ -20,20 +19,18 @@ class FilmOfTheDayInteractor(
     suspend fun sync(): HttpClientResponse<List<FilmOfTheDay>> {
         val response = client.fetchMovies()
         if (response is HttpClientResponse.Ok) {
-            store.clearAndInsertAll(response.data)
+            store.clearAndInsert(response.data.first())
             preferences.lastSyncTime = timeProvider.currentTimeInMillis()
         }
 
         if (response is ParsingError) {
-            store.clearAll()
+            store.clear()
             preferences.fatalStateReached = true
         }
         return response
     }
 
-    suspend fun getFilmOfTheDay() = store.getAll().firstOrNull()
-
-    suspend fun getFilmOfTheDayList() = store.getAll()
+    suspend fun getFilmOfTheDay() = store.getFilmOfTheDay()
 
     fun fatalStateReached() = preferences.fatalStateReached
 

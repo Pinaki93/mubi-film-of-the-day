@@ -28,7 +28,7 @@ class LandingScreenViewModel(
             } else if (filmOfTheDayInteractor.fatalStateReached()) {
                 FatalError
             } else {
-                Success(filmOfTheDayInteractor.getFilmOfTheDayList())
+                Success(filmOfTheDayInteractor.getFilmOfTheDay()!!)
             }
         }
 
@@ -40,7 +40,7 @@ class LandingScreenViewModel(
     private suspend fun syncFilmOfTheDay() = when (val syncResult = filmOfTheDayInteractor.sync()) {
         is HttpClientResponse.HttpError -> ServerError(syncResult.statusCode)
         HttpClientResponse.Offline -> Offline
-        is HttpClientResponse.Ok -> Success(filmOfTheDayInteractor.getFilmOfTheDayList())
+        is HttpClientResponse.Ok -> Success(filmOfTheDayInteractor.getFilmOfTheDay()!!)
         ParsingError -> FatalError
     }
 
@@ -55,8 +55,8 @@ class LandingScreenViewModel(
 
 sealed class FilmOfTheDayState {
     object Loading : FilmOfTheDayState()
-    class Success(filmOfTheDayList: List<FilmOfTheDay>) : FilmOfTheDayState() {
-        val filmOfTheDay = filmOfTheDayList.first()
+    class Success(filmOfTheDayList: FilmOfTheDay) : FilmOfTheDayState() {
+        val filmOfTheDay = filmOfTheDayList
         private val year = filmOfTheDay.year
         val title: String = "${filmOfTheDay.title} ($year)"
         val directors = filmOfTheDay.directors.joinToString()
