@@ -20,6 +20,16 @@ android {
             useSupportLibrary true
         }
     }
+    signingConfigs {
+        release {
+            Properties keyProps = new Properties()
+            keyProps.load(new FileInputStream(file('../keystore.properties')))
+            storeFile file(keyProps["RELEASE_STORE_FILE"])
+            storePassword keyProps["RELEASE_STORE_PASSWORD"]
+            keyAlias keyProps["RELEASE_KEY_ALIAS"]
+            keyPassword keyProps["RELEASE_KEY_PASSWORD"]
+        }
+    }
 
     buildTypes {
         debug {
@@ -27,6 +37,7 @@ android {
             versionNameSuffix "-debug"
         }
         release {
+            signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
