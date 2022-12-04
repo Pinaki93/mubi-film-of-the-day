@@ -14,11 +14,28 @@ dependency injection.
 
 ## Download 📥
 
-The release APK can be downloaded from [here](https://github.com/Pinaki93/Desipe/tree/master/apk).
+The release APK can be downloaded from [here](https://github.com/Pinaki93/mubi-film-of-the-day/tree/main/apk).
 
 ## Architecture 🏗️
 
 The app follows the MVVM pattern with clean architecture.
+
+## Building Locally
+
+To build the release apk locally, you'll need to add a `keystore.propeties` file with the following properties
+
+```
+RELEASE_STORE_FILE=<path>
+RELEASE_KEY_ALIAS=<alias>
+RELEASE_STORE_PASSWORD=<password>
+RELEASE_KEY_PASSWORD=<password>
+```
+
+And then assemble it
+```
+./gradlew assembleRelease
+```
+
 
 ## License
 
